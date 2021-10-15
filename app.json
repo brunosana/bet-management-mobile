@@ -1,0 +1,12 @@
+{
+  "name": "Bets",
+  "displayName": "Bets",
+  "expo": {
+    "name": "Bets",
+    "slug": "Bets",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
