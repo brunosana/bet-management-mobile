@@ -9,6 +9,10 @@ import {
 import { getBottomSpace, getStatusBarHeight } from 'react-native-iphone-x-helper';
 
 import {
+    BorderlessButton
+} from 'react-native-gesture-handler'
+
+import {
     FlatList
 } from 'react-native';
 
@@ -66,6 +70,8 @@ export const Icon = styled(Ionicons)`
     font-size: ${RFValue(28)};
 `;
 
+export const LogoutButton = styled(BorderlessButton)``;
+
 export const ActiveBets = styled.ScrollView.attrs({ 
     horizontal: true,
     showsHorizontalScrollIndicator: false,
@@ -97,5 +103,4 @@ export const BetsList = styled(
         paddingBottom: getBottomSpace()
     }
 })`
-
 `;

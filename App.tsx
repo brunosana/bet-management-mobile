@@ -8,6 +8,9 @@ import { Dashboard } from './src/screens/Dashboard';
 import { CreateBet } from './src/screens/CreateBet';
 import { OptionSelect } from './src/screens/OptionSelect';
 
+import { AppRoutes } from './src/routes/app.routes';
+import { NavigationContainer } from '@react-navigation/native';
+
 import AppLoading from 'expo-app-loading';
 
 import {
@@ -37,7 +40,9 @@ export default function App() {
   return (
   <ThemeProvider theme={main} >
     <StatusBar backgroundColor={main.colors.primary}  barStyle='dark-content' />
-    <CreateBet />
+    <NavigationContainer>
+      <AppRoutes />
+    </NavigationContainer>
   </ThemeProvider>
   );
 }

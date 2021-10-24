@@ -4,8 +4,9 @@ import {
     Feather
 } from '@expo/vector-icons';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { RectButton } from 'react-native-gesture-handler';
 
-export const Container = styled.TouchableOpacity`
+export const Container = styled(RectButton)`
     width: 100%;
     padding: 19px;
     background-color: ${({theme}) => theme.colors.shape};
