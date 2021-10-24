@@ -10,8 +10,8 @@ interface IGain {
 export const Container = styled.View`
     background-color: ${({ theme }) => theme.colors.shape};
     padding: 10px 18px;
-    border-radius: ${({ theme }) => theme.patterns.radiusCard};
-    margin-bottom: ${RFValue(12)};
+    border-radius: ${({ theme }) => theme.patterns.radiusCard}px;
+    margin-bottom: ${RFValue(12)}px;
 `;
 
 export const Info = styled.Text`
@@ -19,7 +19,7 @@ export const Info = styled.Text`
 `;
 
 export const Value = styled.Text<IGain>`
-    font-size: ${RFValue(22)};
+    font-size: ${RFValue(22)}px;
     font-family: ${({ theme }) => theme.fonts.bold};
     color: ${({ theme, gain }) => gain ? theme.colors.success:theme.colors.attention};
 `;
@@ -34,7 +34,7 @@ export const HeaderInfo = styled.View`
 
 export const HeaderIcon = styled(AntDesign)<IGain>`
     color: ${({ theme, gain }) => gain ? theme.colors.success:theme.colors.attention};
-    font-size: ${RFValue(20)};
+    font-size: ${RFValue(20)}px;
 `;
 
 export const Footer = styled.View`
@@ -43,6 +43,6 @@ export const Footer = styled.View`
 `;
 
 export const FooterInfo = styled.Text`
-    font-size: ${RFValue(10)};
+    font-size: ${RFValue(10)}px;
     font-family: ${({ theme }) => theme.fonts.light};
 `;

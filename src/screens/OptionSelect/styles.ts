@@ -15,11 +15,11 @@ export const Container = styled.View`
 `;
 
 export const Header = styled.View`
-    height: ${RFValue(90)};
+    height: ${RFValue(90)}px;
     align-items: center;
     background-color: ${({theme}) => theme.colors.primary};
     justify-content: flex-end;
-    padding-bottom: ${RFValue(20)};
+    padding-bottom: ${RFValue(20)}px;
 `;
 
 export const Title = styled.Text`
