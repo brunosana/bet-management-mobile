@@ -6,8 +6,7 @@ import {
 } from 'react-native';
 
 import { AntDesign } from '@expo/vector-icons';
-
-import { IOption } from './index';
+import { IOption } from '../../../shared/interfaces/IOption';
 
 export const Container = styled.View`
     flex: 1;

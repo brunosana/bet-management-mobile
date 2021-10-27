@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { 
     Keyboard,
@@ -15,13 +15,19 @@ import {
     Header,
     Title,
     Form,
-    Fields
+    Fields,
+    FormMiddle,
+    Bets
 } from './styles';
 
 import { OptionSelectButton } from '../../components/Forms/OptionSelectButton';
 import { Button } from '../../components/Forms/Button';
-import { OptionSelect, IOption } from '../OptionSelect';
+import { OptionSelect } from '../Modals/OptionSelect';
+import { BetValueInput } from '../Modals/BetValueInput';
 import { InputForm } from '../../components/Forms/InputForm';
+import { IOption } from '../../shared/interfaces/IOption';
+import { TeamRow } from '../../components/TeamRow';
+import { IBet } from '../../shared/interfaces/IBet';
 
 interface IFormData {
     team: string;
@@ -29,14 +35,14 @@ interface IFormData {
 }
 
 const schema = Yup.object().shape({
-    team: Yup.string().required('Necessário preencher um time'),
-    odds: Yup.number().
-        moreThan(1.0, 'A Odds precisa ter um valor válido (Maior que 1)')
+    team: Yup.string().required('Necessário inserir o nome do time'),
+    odds: Yup.number()
+        .required('Necessário inserir Odds')
+        .moreThan(1.0, 'A Odds precisa ter um valor válido (Maior que 1)')
         .typeError('Odds aceita apenas valores numéricos')
 }).required();
 
 const CreateBet: React.FC = () => {
-    const [showOptionModal, setShowOptionModal] = useState(false);
 
     const [options, setOptions] = useState<Array<IOption>>([
         {
@@ -57,15 +63,31 @@ const CreateBet: React.FC = () => {
         },
     ]);
 
+    const [option, setOption] = useState<IOption>(options[0]);
+    const [bet_value, setBetValue] = useState(0);
+    const [bets, setBets] = useState<Array<IBet['bets']> | []>([]);
+    
+    const [showOptionModal, setShowOptionModal] = useState(false);
+    const [showBetValueInputModal, setShowBetValueInputModal] = useState(false);
+
+
     const {
         control,
         handleSubmit,
-        formState: { errors }
+        formState: { errors },
+        reset,
+        setValue
     } = useForm({
         resolver: yupResolver(schema)
     });
 
-    const [option, setOption] = useState<IOption>(options[0]);
+    function handleCloseBetValueInput(){
+        setShowBetValueInputModal(false);
+    }
+
+    function handleOpenBetValueInput(){
+        setShowBetValueInputModal(true);
+    }
 
     function handleCloseSelectCategory(){
         setShowOptionModal(false);
@@ -78,20 +100,23 @@ const CreateBet: React.FC = () => {
     function handleRegister(form: IFormData){
         let { team, odds } = form;
         odds = parseFloat(odds.toString().replace(',', '.'));
-        if(!team){
-            return Alert.alert("O time precisa ser inserido.");
-        }
-
-        if(!odds || odds<=1 ){
-            return Alert.alert("O valor da Odds precisa ser válido.");
-        }
 
         const data = {
             option,
             team,
             odds
         }
-        console.log(data);
+        setBets(oldState => [...oldState, data]);
+        reset();
+    }
+
+    function handleEditBet(id: number){
+        let editBet = bets[id];
+        bets.splice(id, 1);
+        setBets([...bets]);
+        setValue('team', editBet.team);
+        setOption(editBet.option);
+        setValue('odds', editBet.odds.toString());
     }
 
     return (
@@ -111,22 +136,46 @@ const CreateBet: React.FC = () => {
                             placeholder="Team"
                             error={errors.team && errors.team.message}
                             />
-                        <OptionSelectButton
-                            title={option.name}
-                            onPress={handleOpenSelectOptionModal}
-                            
-                            />
-                        <InputForm
-                            error={errors.odds && errors.odds.message}
-                            name="odds"
-                            control={control}
-                            keyboardType="numeric"
-                            placeholder="Odds"
+                        <FormMiddle>
+                            <OptionSelectButton
+                                title={option.name}
+                                onPress={handleOpenSelectOptionModal}
+                                
+                                />
+                            <InputForm
+                                width={48.5}
+                                error={errors.odds && errors.odds.message}
+                                name="odds"
+                                control={control}
+                                keyboardType="numeric"
+                                placeholder="Odds"
                             />  
-                    </Fields>
+                        </FormMiddle>
                     <Button
-                        onPress={handleSubmit(handleRegister)}
                         title="Adicionar"
+                        onPress={handleSubmit(handleRegister)}
+                    />
+                    </Fields>
+                    {
+                    bets &&
+                    <Bets
+                        showsVerticalScrollIndicator={false}
+                    >
+                        {
+                        bets.map((bet, index) =>
+                            <TeamRow
+                                onPress={() => handleEditBet(index)}
+                                team={bet.team}
+                                odds={bet.odds}
+                                option={bet.option}
+                            />
+                        )
+                        }
+                    </Bets>
+                    }
+                    <Button
+                        onPress={handleOpenBetValueInput}
+                        title="Próximo"
                         />
                 </Form>
                 <Modal visible={showOptionModal} >
@@ -135,6 +184,16 @@ const CreateBet: React.FC = () => {
                         setOption={setOption}
                         closeSelectCategory={handleCloseSelectCategory}
                         />
+                </Modal>
+
+                <Modal
+                    visible={showBetValueInputModal}
+                    transparent
+                >
+                    <BetValueInput
+                        setBetValue={setBetValue}
+                        closeModal={handleCloseBetValueInput}
+                    />
                 </Modal>
             </Container>
         </TouchableWithoutFeedback>

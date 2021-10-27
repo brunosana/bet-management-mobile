@@ -1,8 +1,12 @@
 import { RFValue } from 'react-native-responsive-fontsize';
 import styled from 'styled-components/native';
 
-export const Container = styled.View`
-    width: 100%;
+interface ISetWidth {
+    width?: number;
+}
+
+export const Container = styled.View<ISetWidth>`
+    width: ${({ width }) => ((width && width > 0 ) ? width : 100)}%;
 `;
 
 export const Error = styled.Text`

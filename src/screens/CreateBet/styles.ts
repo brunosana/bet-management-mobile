@@ -27,4 +27,15 @@ export const Form = styled.View`
     justify-content:space-between;
 `;
 
+export const FormMiddle = styled.View`
+    flex-direction: row;
+    justify-content: space-between;
+`;
+
+export const Bets = styled.ScrollView`
+    flex: 1;
+    margin: 20px 0;
+    width: 100%;
+`;
+
 export const Fields = styled.View``;

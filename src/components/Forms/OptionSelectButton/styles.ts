@@ -7,7 +7,7 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import { RectButton } from 'react-native-gesture-handler';
 
 export const Container = styled(RectButton)`
-    width: 100%;
+    width: 48.5%;
     padding: 19px;
     background-color: ${({theme}) => theme.colors.shape};
     border-radius: ${({theme}) => theme.patterns.radiusCard}px;

@@ -13,16 +13,18 @@ interface IInput extends TextInputProps {
     control: Control;
     name: string;
     error: string;
+    width?: number;
 }
 
 const InputForm: React.FC<IInput> = ({
     control,
     name,
     error,
+    width,
     ...rest
 }) => {
     return (
-        <Container>
+        <Container width={width} >
             <Controller
                 name={name}
                 control={control}
