@@ -44,7 +44,6 @@ const BetValueInput: React.FC<IBetValueInput> = ({ closeModal, setBetValue }) =>
     });
 
     function handleCreateBet({ betValue }: IFormData) {
-        console.log('Dentro', betValue);
         setBetValue(betValue);
         closeModal();
     }
@@ -61,7 +60,7 @@ const BetValueInput: React.FC<IBetValueInput> = ({ closeModal, setBetValue }) =>
                         keyboardType="numeric"
                         placeholder="Valor da Aposta"
                         placeholderTextColor={main.colors.shape}
-                    />
+                        />
                     <Button
                         title="Finalizar"
                         onPress={handleSubmit(handleCreateBet)}
