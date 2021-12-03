@@ -12,7 +12,8 @@ import {
     ActiveBets,
     Bets,
     BetTitle,
-    BetsList
+    BetsList,
+    LogoutButton
 } from './styles';
 
 import { OpenedBetCard } from '../../components/OpenedBetCard';
@@ -88,7 +89,11 @@ const Dashboard: React.FC = () => {
                             <UserBets>90 Apostas</UserBets>
                         </UserInfo>
                     </UserArea>
-                    <Icon name="md-exit-outline"/>
+                    <LogoutButton
+                        onPress={() => {}}
+                    >
+                        <Icon name="md-exit-outline"/>
+                    </LogoutButton>
                 </UserWrapper>
             </Header>
             <ActiveBets>

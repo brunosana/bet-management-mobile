@@ -17,7 +17,7 @@ const main = {
         title: '#363F5F',
         text: '#969CB2',
         background: '#333333',
-        background_highlight:'#4A4443',
+        background_highlight: 'rgba(35, 35, 35, 0.4)' //'#4A4443',
         
     },
     fonts: {

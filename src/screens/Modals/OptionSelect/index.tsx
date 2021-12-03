@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '../../components/Forms/Button';
+import { IOption } from '../../../shared/interfaces/IOption';
 
 import {
     Container,
@@ -11,11 +11,6 @@ import {
     Name,
     Separator
 } from './styles';
-
-interface IOption {
-    id: string;
-    name: string;
-}
 
 interface IOptionSelect {
     options: Array<IOption>;
@@ -55,4 +50,4 @@ const OptionSelect: React.FC<IOptionSelect> = ({ options, setOption, closeSelect
     );
 }
 
-export { OptionSelect, IOption };
+export { OptionSelect };

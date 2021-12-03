@@ -6,9 +6,9 @@ import {
     Icon
 } from './styles';
 
-import { TouchableOpacityProps } from 'react-native';
+import { RectButtonProps } from 'react-native-gesture-handler';
 
-interface IOption extends TouchableOpacityProps{
+interface IOption extends RectButtonProps {
     title: string;
 }
 

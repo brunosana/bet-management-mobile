@@ -6,7 +6,13 @@ import { main } from './src/global/styles/theme';
 
 import { Dashboard } from './src/screens/Dashboard';
 import { CreateBet } from './src/screens/CreateBet';
-import { OptionSelect } from './src/screens/OptionSelect';
+import { OptionSelect } from './src/screens/Modals/OptionSelect';
+import { SignIn } from './src/screens/Signin'; 
+
+import { AppRoutes } from './src/routes/app.routes';
+import { NavigationContainer } from '@react-navigation/native';
+
+import { AuthProvider } from './src/hooks/auth';
 
 import AppLoading from 'expo-app-loading';
 
@@ -37,7 +43,12 @@ export default function App() {
   return (
   <ThemeProvider theme={main} >
     <StatusBar backgroundColor={main.colors.primary}  barStyle='dark-content' />
-    <CreateBet />
+    <AuthProvider>
+    {/* <NavigationContainer>
+      <AppRoutes />
+    </NavigationContainer> */}
+    <SignIn />
+    </AuthProvider>
   </ThemeProvider>
   );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { TouchableOpacityProps } from 'react-native';
+import { RectButtonProps } from 'react-native-gesture-handler';
 
 import {
     Container,
@@ -13,7 +14,9 @@ interface IButton extends TouchableOpacityProps {
 
 const Button: React.FC<IButton> = ({title, ...rest}) => {
     return (
-        <Container {...rest}>
+        <Container
+        {...rest}
+        >
             <Title>{ title }</Title>
         </Container>
     );

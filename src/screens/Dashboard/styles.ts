@@ -9,6 +9,10 @@ import {
 import { getBottomSpace, getStatusBarHeight } from 'react-native-iphone-x-helper';
 
 import {
+    BorderlessButton
+} from 'react-native-gesture-handler'
+
+import {
     FlatList
 } from 'react-native';
 
@@ -21,7 +25,7 @@ export const Container = styled.View`
 
 export const Header = styled.View`
     width: 100%;
-    height: ${RFPercentage(40)};
+    height: ${RFPercentage(40)}px;
     background-color: ${({ theme }) => theme.colors.primary };
     align-items: flex-start;
 `;
@@ -41,19 +45,19 @@ export const UserArea = styled.View`
 `;
 
 export const UserPhoto = styled.Image`
-    width: ${RFValue(55)};
-    height: ${RFValue(55)};
+    width: ${RFValue(55)}px;
+    height: ${RFValue(55)}px;
     border-radius: ${({ theme }) => theme.patterns.radiusHard}px;
     `;
 
 export const UserInfo = styled.View`
-    margin-left: ${RFValue(15)};
+    margin-left: ${RFValue(15)}px;
 `;
 
 export const UserName = styled.Text`
     color: ${({ theme }) => theme.colors.background};
     font-family: ${({ theme }) => theme.fonts.bold};
-    font-size: ${RFValue(20)};
+    font-size: ${RFValue(20)}px;
     `;
 
 export const UserBets = styled.Text`
@@ -63,8 +67,10 @@ export const UserBets = styled.Text`
 
 export const Icon = styled(Ionicons)`
     color: ${({ theme }) => theme.colors.background};
-    font-size: ${RFValue(28)};
+    font-size: ${RFValue(28)}px;
 `;
+
+export const LogoutButton = styled(BorderlessButton)``;
 
 export const ActiveBets = styled.ScrollView.attrs({ 
     horizontal: true,
@@ -84,9 +90,9 @@ export const Bets = styled.View`
 
 export const BetTitle = styled.Text`
     color: ${({ theme }) => theme.colors.primary};
-    font-size: ${RFValue(18)};
+    font-size: ${RFValue(18)}px;
     font-family: ${({ theme }) => theme.fonts.bold};
-    margin-bottom: ${RFValue(15)};
+    margin-bottom: ${RFValue(15)}px;
 `;
 
 export const BetsList = styled(
@@ -97,5 +103,4 @@ export const BetsList = styled(
         paddingBottom: getBottomSpace()
     }
 })`
-
 `;

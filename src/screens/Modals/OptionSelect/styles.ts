@@ -6,8 +6,7 @@ import {
 } from 'react-native';
 
 import { AntDesign } from '@expo/vector-icons';
-
-import { IOption } from './index';
+import { IOption } from '../../../shared/interfaces/IOption';
 
 export const Container = styled.View`
     flex: 1;
@@ -15,11 +14,11 @@ export const Container = styled.View`
 `;
 
 export const Header = styled.View`
-    height: ${RFValue(90)};
+    height: ${RFValue(90)}px;
     align-items: center;
     background-color: ${({theme}) => theme.colors.primary};
     justify-content: flex-end;
-    padding-bottom: ${RFValue(20)};
+    padding-bottom: ${RFValue(20)}px;
 `;
 
 export const Title = styled.Text`
