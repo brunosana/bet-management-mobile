@@ -8,12 +8,12 @@ import { useAuth } from '../hooks/auth';
 
 const Routes: React.FC = () => {
     
-    const { user } = useAuth();
+    const { googleUser, token } = useAuth();
 
     return (
         <NavigationContainer>
             {
-                user.id ? <AppRoutes /> : <AuthRoutes />
+                ( googleUser.id && token) ? <AppRoutes /> : <AuthRoutes />
             }
         </NavigationContainer>
     );

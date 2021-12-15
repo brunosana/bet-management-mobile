@@ -3,29 +3,30 @@ import React,
     useContext,
     createContext,
     ReactNode,
-    useState
+    useState,
+    useEffect
 } from 'react';
 
 import * as Google from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IGoogleUser } from '../shared/interfaces/IGoogleUser';
+import { IGoogleUserInfo } from '../shared/interfaces/IGoogleUserInfo';
+import { IUser } from '../shared/interfaces/IUser';
+import { GoogleAuthService } from '../shared/services/api/googleAuthService';
 
 interface IAuthProvider{
     children: ReactNode;
 }
 
-interface IUser {
-    id: string;
-    email: string;
-    name: string;
-    photo?: string;
-    locale: string;
-}
-
 interface IAuthContextData {
-    user: IUser;
+    googleUser: IGoogleUser;
     signInWithGoogle(): Promise<void>;
     signInWithApple(): Promise<void>;
+    signOut(): Promise<void>;
+    userStorageLoaging: boolean;
+    token: string;
+    user: IUser;
 }
 
 interface IAuthorizationResponse {
@@ -35,21 +36,16 @@ interface IAuthorizationResponse {
     type: string;
 }
 
-interface IUserInfo {
-    id: string;
-    email: string;
-    name: string;
-    picture: string;
-    verified_email: boolean;
-    locale: string;
-}
-
 const AuthContext = createContext({} as IAuthContextData);
 
 function AuthProvider ({ children }: IAuthProvider) {
     
-    const [user, setUser] = useState<IUser>({} as IUser);
+    const [user, setUser] = useState<IGoogleUser>({} as IGoogleUser);
+    const [betUser, setBetUser] = useState<IUser>({} as IUser);
+    const [token, setToken] = useState('');
+    const [userStorageLoaging, setUserStorageLoaging] = useState(true);
 
+    const userStorageKey = '@betcontrol:user';
 
     async function signInWithGoogle(){
         try {
@@ -71,7 +67,7 @@ function AuthProvider ({ children }: IAuthProvider) {
 
             if(type === 'success'){
                 const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`);
-                const userInfo = await response.json() as IUserInfo;
+                const userInfo = await response.json() as IGoogleUserInfo;
 
                 const userLogged = {
                     id: userInfo.id,
@@ -82,8 +78,13 @@ function AuthProvider ({ children }: IAuthProvider) {
                 }
                 setUser(userLogged);
 
-                await AsyncStorage.setItem('@betcontrol:user', JSON.stringify(userLogged));
+                const googleAuthService = new GoogleAuthService();
+                const { user, token } = await googleAuthService.execute(userInfo);
+                
 
+                setToken(token);
+                setBetUser(user);
+                await AsyncStorage.setItem(userStorageKey, JSON.stringify(user));
             }
 
         }catch(error: any){
@@ -101,14 +102,16 @@ function AuthProvider ({ children }: IAuthProvider) {
             });
 
             if(credential){
+                const name = credential.fullName!.givenName!;
                 const userLogged = {
                     id: String(credential.user),
                     email: credential.email!,
                     locale: '',
-                    name: credential.fullName!.givenName!,
+                    name,
+                    photo: `https://ui-avatars.com/api/?name=${encodeURI(name)}`
                 }
                 setUser(userLogged);
-                await AsyncStorage.setItem('@betcontrol:user', JSON.stringify(userLogged));
+                await AsyncStorage.setItem(userStorageKey, JSON.stringify(userLogged));
             }
 
             
@@ -117,13 +120,38 @@ function AuthProvider ({ children }: IAuthProvider) {
         }     
     }
 
+    useEffect(()=> {
+        async function loadUserStorrageDate(): Promise<void>{
+            const userStoraged = await AsyncStorage.getItem(userStorageKey);
+
+            if(userStoraged){
+                const userLogged = JSON.parse(userStoraged) as IGoogleUser;
+                setUser(userLogged);
+            }
+
+            setUserStorageLoaging(false);
+        }
+        loadUserStorrageDate();
+    }, []);
+
+
+    async function signOut(){
+        setUser({} as IGoogleUser);
+        await AsyncStorage.removeItem(userStorageKey);
+    }
+
     return (
     <AuthContext.Provider
         value={
             {
-                user,
+                user: betUser,
+                googleUser: user,
                 signInWithGoogle,
-                signInWithApple
+                signInWithApple,
+                signOut,
+                userStorageLoaging,
+                token,
+
             }
         }
       >

@@ -4,8 +4,7 @@ import AppLoading from 'expo-app-loading';
 
 import { main } from './src/global/styles/theme';
 import { Routes } from './src/routes';
-import { AuthProvider } from './src/hooks/auth';
-
+import { AuthProvider, useAuth } from './src/hooks/auth';
 
 import {
   useFonts,
@@ -28,7 +27,10 @@ export default function App() {
     Roboto_700Bold,
     Roboto_900Black
   });
-  if(!fontsLoaded){
+
+  const { userStorageLoaging } = useAuth();
+
+  if(!fontsLoaded || userStorageLoaging){
     return <AppLoading />
   }
   return (
