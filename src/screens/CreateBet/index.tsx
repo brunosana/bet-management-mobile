@@ -4,7 +4,8 @@ import {
     Keyboard,
     Modal,
     TouchableWithoutFeedback,
-    Alert
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
@@ -27,7 +28,11 @@ import { BetValueInput } from '../Modals/BetValueInput';
 import { InputForm } from '../../components/Forms/InputForm';
 import { IOption } from '../../shared/interfaces/IOption';
 import { TeamRow } from '../../components/TeamRow';
-import { IBet } from '../../shared/interfaces/IBet';
+import { IBet, ISingleBet } from '../../shared/interfaces/IBet';
+import { GetOptions } from '../../shared/services/api/getOptions';
+import { loadOptions } from '@babel/core';
+import { useAuth } from '../../hooks/auth';
+import { useTheme } from 'styled-components';
 
 interface IFormData {
     team: string;
@@ -44,28 +49,14 @@ const schema = Yup.object().shape({
 
 const CreateBet: React.FC = () => {
 
-    const [options, setOptions] = useState<Array<IOption>>([
-        {
-            id: '1',
-            name: '+1,5'
-        },
-        {
-            id: '2',
-            name: '+2,5'
-        },
-        {
-            id: '3',
-            name: '+3,5'
-        },
-        {
-            id: '4',
-            name: '+4,5'
-        },
-    ]);
+    const [options, setOptions] = useState<Array<IOption>>([]);
 
-    const [option, setOption] = useState<IOption>(options[0]);
+    const { token } = useAuth();
+    const theme = useTheme();
+    const [option, setOption] = useState<IOption>();
     const [bet_value, setBetValue] = useState(0);
-    const [bets, setBets] = useState<Array<IBet['bets']> | []>([]);
+    const [bets, setBets] = useState<Array<ISingleBet> | []>([]);
+    const [loadingOptions, setLoadingOptions] = useState(false);
     
     const [showOptionModal, setShowOptionModal] = useState(false);
     const [showBetValueInputModal, setShowBetValueInputModal] = useState(false);
@@ -80,6 +71,18 @@ const CreateBet: React.FC = () => {
     } = useForm({
         resolver: yupResolver(schema)
     });
+
+    useEffect(() => {
+        async function loadOptions(){
+            setLoadingOptions(true);
+            const getOptions = new GetOptions();
+            const optionsDB = await getOptions.execute();
+            setOptions(optionsDB);
+            setOption(options[0]);
+            setLoadingOptions(false);
+        }
+        loadOptions();
+    }, []);
 
     function handleCloseBetValueInput(){
         setShowBetValueInputModal(false);
@@ -106,6 +109,7 @@ const CreateBet: React.FC = () => {
             team,
             odds
         }
+        // eslint-disable-next-line
         setBets(oldState => [...oldState, data]);
         reset();
     }
@@ -120,9 +124,10 @@ const CreateBet: React.FC = () => {
     }
 
     return (
-        <TouchableWithoutFeedback
+
+            <TouchableWithoutFeedback
             onPress={Keyboard.dismiss}
-        >
+            >
             <Container>
                 <Header>
                     <Title>Cadastrar Aposta</Title>
@@ -137,11 +142,12 @@ const CreateBet: React.FC = () => {
                             error={errors.team && errors.team.message}
                             />
                         <FormMiddle>
+                            { option &&
                             <OptionSelectButton
-                                title={option.name}
+                                title={ option.name }
                                 onPress={handleOpenSelectOptionModal}
                                 
-                                />
+                                />}
                             <InputForm
                                 width={48.5}
                                 error={errors.odds && errors.odds.message}
@@ -164,6 +170,7 @@ const CreateBet: React.FC = () => {
                         {
                         bets.map((bet, index) =>
                             <TeamRow
+                                key={`${bet.team}-${bet.odds}-${bet._id}`}
                                 onPress={() => handleEditBet(index)}
                                 team={bet.team}
                                 odds={bet.odds}

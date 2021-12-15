@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     Container,
     Header,
@@ -13,84 +13,54 @@ import {
     Bets,
     BetTitle,
     BetsList,
-    LogoutButton
+    LogoutButton,
+    Message
 } from './styles';
 
+import { useAuth } from '../../hooks/auth';
+
 import { OpenedBetCard } from '../../components/OpenedBetCard';
-
-
 import { BetCard, IBetCardData } from '../../components/BetCard';
-
-interface IBetData extends IBetCardData{
-    id: number;
-}
+import { GetBets } from '../../shared/services/api/getBets';
+import { IBet } from '../../shared/interfaces/IBet';
+import { ActivityIndicator } from 'react-native';
+import { useTheme } from 'styled-components';
 
 const Dashboard: React.FC = () => {
 
-    const [bets, setBets] = useState<Array<IBetData> | []>([
-        {
-            id: 1,
-            teams: 8,
-            odds: 1.11,
-            gain: true,
-            date: new Date(),
-            value: 40.0
-        },
-        {
-            id: 2,
-            teams: 3,
-            odds: 1.25,
-            gain: false,
-            date: new Date(),
-            value: 75.40
-        },
-        {
-            id: 3,
-            teams: 3,
-            odds: 2.13,
-            gain: true,
-            date: new Date(),
-            value: 250.00
-        },
-        {
-            id: 4,
-            teams: 8,
-            odds: 1.11,
-            gain: true,
-            date: new Date(),
-            value: 40.0
-        },
-        {
-            id: 5,
-            teams: 3,
-            odds: 1.25,
-            gain: false,
-            date: new Date(),
-            value: 75.40
-        },
-        {
-            id: 6,
-            teams: 3,
-            odds: 2.13,
-            gain: true,
-            date: new Date(),
-            value: 250.00
-        },
-    ]);
+    const [bets, setBets] = useState<Array<IBet>>();
+    const theme = useTheme();
+
+    const { signOut, user, googleUser, token } = useAuth();
+
+    useEffect(()=> {
+        async function loadBets() {
+            const getBets = new GetBets();
+            const betsUser = await getBets.execute(token);
+            setBets(betsUser);
+        }
+        loadBets();
+    }, []);
 
     return (
-        <Container>
+        <>
+        {
+            token ?
+            <Container>
             <Header>
                 <UserWrapper>
                     <UserArea>
-                        <UserPhoto source={{ uri: 'https://github.com/brunosana.png' }} />
+                        <UserPhoto source={{ uri:  googleUser.photo }} />
                         <UserInfo>
-                            <UserName>BrunoSana</UserName>
-                            <UserBets>90 Apostas</UserBets>
+                            <UserName>{user.name}</UserName>
+                            <UserBets>{user.bets > 0 ?
+                                `${user.bets} Aposta${user.bets > 1 ? 's' : ''}`
+                                : 'Nenhuma aposta'}
+                            </UserBets>
                         </UserInfo>
                     </UserArea>
                     <LogoutButton
-                        onPress={() => {}}
+                        onPress={signOut}
                     >
                         <Icon name="md-exit-outline"/>
                     </LogoutButton>
@@ -104,14 +74,30 @@ const Dashboard: React.FC = () => {
             </ActiveBets>
             <Bets>
                 <BetTitle>Histórico</BetTitle>
-                <BetsList
+                {
+                    (!bets || bets.length === 0) &&
+                    <Message>Não há histórico de Apostas</Message>
+                }
+                { bets && <BetsList
                     data={bets}
-                    keyExtractor={item => item.id.toString()}
+                    keyExtractor={item => item._id.toString()}
                     renderItem={({item}) => <BetCard data={item} />}
-                />
+                />}
+
             </Bets>
         </Container>
+
+        :
+
+        <ActivityIndicator
+        color={theme.colors.shape}
+        style={{
+            margin: 18
+        }}
+        />
+        }
+        </>
     );
 };
 
-export { Dashboard, IBetData }
+export { Dashboard }

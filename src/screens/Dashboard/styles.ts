@@ -16,7 +16,7 @@ import {
     FlatList
 } from 'react-native';
 
-import { IBetData } from './index';
+import { IBet } from '../../shared/interfaces/IBet';
 
 export const Container = styled.View`
     flex: 1;
@@ -96,11 +96,15 @@ export const BetTitle = styled.Text`
 `;
 
 export const BetsList = styled(
-    FlatList as new () => FlatList<IBetData>
+    FlatList as new () => FlatList<IBet>
     ).attrs({
     showsVerticalScrollIndicator: false,
     contentContainerStyle: {
         paddingBottom: getBottomSpace()
     }
 })`
+`;
+
+export const Message = styled.Text`
+    color: ${({ theme }) => theme.colors.shape}
 `;
