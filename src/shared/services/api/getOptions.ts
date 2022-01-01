@@ -11,9 +11,14 @@ class GetOptions {
     
         const response = await api.get('/options');
 
+        if(response.status === 500){
+            console.log(response);
+            throw new Error('Erro ao capturar Apostas no banco de dados');
+        }
+        
         if(response.status !== 200){
             console.log(response);
-            throw new AppError('Erro ao capturar opções no banco');
+            throw new AppError(response.data.message);
         }
 
         const betsWithoutId = response.data as Array<IOptionDB>;

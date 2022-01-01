@@ -27,9 +27,14 @@ class GoogleAuthService {
             id
         });
 
+        if(response.status === 500){
+            console.log(response);
+            throw new Error('Erro ao capturar Apostas no banco de dados');
+        }
+        
         if(response.status !== 200){
             console.log(response);
-            throw new Error('Erro ao buscar usuário no banco de dados');
+            throw new AppError(response.data.message);
         }
 
         const { user, token } = response.data as IAuthSuccess;

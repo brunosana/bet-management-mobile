@@ -18,6 +18,7 @@ import {
 import {
   StatusBar
 } from 'react-native'
+import { Hooks } from './src/hooks';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -36,9 +37,9 @@ export default function App() {
   return (
   <ThemeProvider theme={main} >
     <StatusBar backgroundColor={main.colors.primary}  barStyle='dark-content' />
-    <AuthProvider>
+    <Hooks>
       <Routes />
-    </AuthProvider>
+    </Hooks>
   </ThemeProvider>
   );
 }
