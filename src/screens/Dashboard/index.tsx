@@ -14,22 +14,28 @@ import {
     BetTitle,
     BetsList,
     LogoutButton,
-    Message
+    Message,
+    BetHeader,
+    RefreshButton,
+    RefreshIcon
 } from './styles';
 
 import { useAuth } from '../../hooks/auth';
 
 import { OpenedBetCard } from '../../components/OpenedBetCard';
 import { IBet } from '../../shared/interfaces/IBet';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Modal, ToastAndroid } from 'react-native';
 import { useTheme } from 'styled-components';
 import { useApi } from '../../hooks/api';
 import { BetCard } from '../../components/BetCard';
+import { Loading } from '../Modals/Loading';
 
 const Dashboard: React.FC = () => {
 
     const [openedBets, setOpenedBets] = useState<Array<IBet>>();
     const [bets, setBets] = useState<Array<IBet>>();
+    const [isLoadingOptions, setIsLoadingOptions] = useState(false);
+
     const theme = useTheme();
     const { getBets } = useApi();
 
@@ -45,11 +51,19 @@ const Dashboard: React.FC = () => {
     }
 
     useEffect(()=> {
-        loadOpenedBets();
-        loadBets();
+        async function execute(){
+            loadOpenedBets();
+            loadBets();
+        }
+        execute();
     }, []);
-
-    const handleFinishBet = useCallback(() => {
+    
+    const handleUpdate = useCallback(async () => {
+        setIsLoadingOptions(true);
+        await loadBets();
+        await loadOpenedBets();
+        setIsLoadingOptions(false);
+        ToastAndroid.show('Dados atualizados', ToastAndroid.SHORT);
     }, []);
 
     return (
@@ -84,17 +98,24 @@ const Dashboard: React.FC = () => {
             { openedBets &&
                 openedBets.map(b =>
                     <OpenedBetCard
-                        key={b._id}
-                        id={b._id}
-                        bet={b}
-                        onFinishBet={handleFinishBet}
+                    key={b._id}
+                    id={b._id}
+                    bet={b}
+                    onFinishBet={() => {}}
                     />
-                )
-            }
+                    )
+                }
             </ActiveBets>
 
             <Bets>
-                <BetTitle>Histórico</BetTitle>
+                <BetHeader>
+                    <BetTitle>Histórico</BetTitle>
+                    <RefreshButton
+                        onPress={handleUpdate}
+                    >
+                        <RefreshIcon name="refresh-outline"/>
+                    </RefreshButton>
+                </BetHeader>
                 {
                     (!bets || bets.length === 0) &&
                     <Message>Não há histórico de Apostas</Message>
@@ -117,6 +138,12 @@ const Dashboard: React.FC = () => {
         }}
         />
         }
+        <Modal
+            visible={isLoadingOptions}
+            transparent
+        >
+            <Loading />
+        </Modal>
         </>
     );
 };
