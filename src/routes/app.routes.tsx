@@ -21,10 +21,10 @@ const AppRoutes: React.FC = () => {
         <Navigator
             screenOptions={{
                 headerShown: false,
-                tabBarActiveTintColor: theme.colors.primary,
+                tabBarActiveTintColor: theme.colors.background,
                 tabBarInactiveTintColor: theme.colors.shape,
                 tabBarLabelPosition: 'beside-icon',
-                tabBarActiveBackgroundColor: theme.colors.background_highlight,
+                tabBarActiveBackgroundColor: theme.colors.primary,
                 tabBarInactiveBackgroundColor: theme.colors.background,
                 tabBarStyle: {
                     height: 50,
