@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
     Container,
     Header,
@@ -20,26 +20,36 @@ import {
 import { useAuth } from '../../hooks/auth';
 
 import { OpenedBetCard } from '../../components/OpenedBetCard';
-import { BetCard, IBetCardData } from '../../components/BetCard';
-import { GetBets } from '../../shared/services/api/getBets';
 import { IBet } from '../../shared/interfaces/IBet';
 import { ActivityIndicator } from 'react-native';
 import { useTheme } from 'styled-components';
+import { useApi } from '../../hooks/api';
+import { BetCard } from '../../components/BetCard';
 
 const Dashboard: React.FC = () => {
 
+    const [openedBets, setOpenedBets] = useState<Array<IBet>>();
     const [bets, setBets] = useState<Array<IBet>>();
     const theme = useTheme();
+    const { getBets } = useApi();
 
     const { signOut, user, googleUser, token } = useAuth();
 
+    async function loadBets() {
+        const betsUser = await getBets({ token, max: 10, opened: false });
+        setBets(betsUser);
+    }
+    async function loadOpenedBets() {
+        const betsUser = await getBets({ token, opened: true });
+        setOpenedBets(betsUser);
+    }
+
     useEffect(()=> {
-        async function loadBets() {
-            const getBets = new GetBets();
-            const betsUser = await getBets.execute(token);
-            setBets(betsUser);
-        }
+        loadOpenedBets();
         loadBets();
+    }, []);
+
+    const handleFinishBet = useCallback(() => {
     }, []);
 
     return (
@@ -66,12 +76,23 @@ const Dashboard: React.FC = () => {
                     </LogoutButton>
                 </UserWrapper>
             </Header>
+            {
+                (!openedBets || openedBets.length === 0) &&
+                <Message>Não há Apostas Abertas</Message>
+            }
             <ActiveBets>
-                <OpenedBetCard teams={8} odds={1.11} value={30.00} return_value={150.65} />
-                <OpenedBetCard teams={2} odds={1.6} value={45.00} return_value={215.00} />
-                <OpenedBetCard teams={3} odds={2.4} value={180.00} return_value={550.65} />
-                <OpenedBetCard teams={8} odds={1.11} value={30.00} return_value={150.65} />
+            { openedBets &&
+                openedBets.map(b =>
+                    <OpenedBetCard
+                        key={b._id}
+                        id={b._id}
+                        bet={b}
+                        onFinishBet={handleFinishBet}
+                    />
+                )
+            }
             </ActiveBets>
+
             <Bets>
                 <BetTitle>Histórico</BetTitle>
                 {

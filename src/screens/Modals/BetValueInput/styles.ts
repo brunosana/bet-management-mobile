@@ -1,8 +1,5 @@
 import styled from 'styled-components/native';
 
-import {
-    TouchableWithoutFeedback
-} from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 import { InputForm } from '../../../components/Forms/InputForm';
@@ -19,7 +16,7 @@ export const Content = styled.View`
     width: 90%;
     height: 40%;
     background-color: ${({ theme }) => theme.colors.shape};
-    border-radius: ${({ theme }) => theme.patterns.radiusHard};
+    border-radius: ${({ theme }) => theme.patterns.radiusHard}px;
     align-items: center;
     justify-content: center;
 `;

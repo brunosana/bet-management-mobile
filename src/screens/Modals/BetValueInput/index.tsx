@@ -1,4 +1,6 @@
 import React from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
 
 import {
     Container,
@@ -7,13 +9,7 @@ import {
     Input,
     Form
 } from './styles'
-
 import { Button } from '../../../components/Forms/Button';
-
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-
-import * as Yup from 'yup';
 import { main } from '../../../global/styles/theme';
 
 const schema = Yup.object().shape({
@@ -37,14 +33,11 @@ const BetValueInput: React.FC<IBetValueInput> = ({ closeModal, setBetValue }) =>
         control,
         handleSubmit,
         formState: { errors },
-        reset,
-        setValue
-    } = useForm({
-        resolver: yupResolver(schema)
-    });
+    } = useForm();
 
     function handleCreateBet({ betValue }: IFormData) {
-        setBetValue(betValue);
+        let value = parseFloat(betValue.toString().replace(',', '.'));
+        setBetValue(value);
         closeModal();
     }
 

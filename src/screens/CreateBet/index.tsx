@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-
+import { ParamListBase } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { 
     Keyboard,
     Modal,
     TouchableWithoutFeedback,
-    Alert,
-    ActivityIndicator
 } from 'react-native';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
@@ -25,14 +24,13 @@ import { OptionSelectButton } from '../../components/Forms/OptionSelectButton';
 import { Button } from '../../components/Forms/Button';
 import { OptionSelect } from '../Modals/OptionSelect';
 import { BetValueInput } from '../Modals/BetValueInput';
+import { Loading } from '../Modals/Loading';
 import { InputForm } from '../../components/Forms/InputForm';
 import { IOption } from '../../shared/interfaces/IOption';
 import { TeamRow } from '../../components/TeamRow';
-import { IBet, ISingleBet } from '../../shared/interfaces/IBet';
-import { GetOptions } from '../../shared/services/api/getOptions';
-import { loadOptions } from '@babel/core';
-import { useAuth } from '../../hooks/auth';
-import { useTheme } from 'styled-components';
+import { ISingleBet } from '../../shared/interfaces/IBet';
+import AppLoading from 'expo-app-loading';
+import { useApi } from '../../hooks/api';
 
 interface IFormData {
     team: string;
@@ -47,20 +45,24 @@ const schema = Yup.object().shape({
         .typeError('Odds aceita apenas valores numéricos')
 }).required();
 
-const CreateBet: React.FC = () => {
+interface ICreateBet {
+    navigation: StackNavigationProp<ParamListBase, 'Create'>;
+}
+
+const CreateBet: React.FC<ICreateBet> = ({ navigation }) => {
 
     const [options, setOptions] = useState<Array<IOption>>([]);
 
-    const { token } = useAuth();
-    const theme = useTheme();
     const [option, setOption] = useState<IOption>();
     const [bet_value, setBetValue] = useState(0);
     const [bets, setBets] = useState<Array<ISingleBet> | []>([]);
-    const [loadingOptions, setLoadingOptions] = useState(false);
+    const [isLoadingOptions, setIsLoadingOptions] = useState(false);
     
     const [showOptionModal, setShowOptionModal] = useState(false);
     const [showBetValueInputModal, setShowBetValueInputModal] = useState(false);
 
+
+    const { getOptions, options: apiOptions } = useApi();
 
     const {
         control,
@@ -74,15 +76,32 @@ const CreateBet: React.FC = () => {
 
     useEffect(() => {
         async function loadOptions(){
-            setLoadingOptions(true);
-            const getOptions = new GetOptions();
-            const optionsDB = await getOptions.execute();
-            setOptions(optionsDB);
-            setOption(options[0]);
-            setLoadingOptions(false);
+            setIsLoadingOptions(true);
+            if(apiOptions.length > 0){
+                setOptions(apiOptions);
+            }else{
+                const optionsDB = await getOptions();
+                setOptions(optionsDB);
+            }
+            if(!option){
+                setOption(options[0]);
+            }
+            setIsLoadingOptions(false);
         }
         loadOptions();
-    }, []);
+    }, [options]);
+
+    useEffect(() => {
+        if(bet_value > 0){
+            navigation.navigate('Finish',
+            {
+                bet: {
+                    bets,
+                    bet_value,
+                }
+            });
+        }
+    }, [bet_value]);
 
     function handleCloseBetValueInput(){
         setShowBetValueInputModal(false);
@@ -109,8 +128,14 @@ const CreateBet: React.FC = () => {
             team,
             odds
         }
-        // eslint-disable-next-line
-        setBets(oldState => [...oldState, data]);
+
+        const oldBets = bets;
+        const newBet = {
+            odds: data.odds,
+            option: data.option,
+            team: data.team
+        } as ISingleBet;
+        setBets([...oldBets, newBet]);
         reset();
     }
 
@@ -142,12 +167,15 @@ const CreateBet: React.FC = () => {
                             error={errors.team && errors.team.message}
                             />
                         <FormMiddle>
-                            { option &&
-                            <OptionSelectButton
-                                title={ option.name }
-                                onPress={handleOpenSelectOptionModal}
-                                
-                                />}
+                            { option ?
+                                <OptionSelectButton
+                                    title={ option.name }
+                                    onPress={handleOpenSelectOptionModal}
+                                    
+                                />
+                                :
+                                <AppLoading />
+                            }
                             <InputForm
                                 width={48.5}
                                 error={errors.odds && errors.odds.message}
@@ -202,6 +230,11 @@ const CreateBet: React.FC = () => {
                         closeModal={handleCloseBetValueInput}
                     />
                 </Modal>
+                {/* <Modal
+                    visible={isLoadingOptions}
+                >
+                    <Loading />
+                </Modal> */}
             </Container>
         </TouchableWithoutFeedback>
     );
