@@ -3,17 +3,18 @@ import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 import { MaterialIcons } from '@expo/vector-icons';
+import { BorderlessButton, TouchableOpacity } from 'react-native-gesture-handler';
 
 interface ICard {
     odds: number;
 }
 
-export const Container = styled.View<ICard>`
+export const Container = styled(TouchableOpacity)<ICard>`
     width: ${RFValue(300)}px;
     height: ${RFValue(175)}px;
     border-radius: ${({ theme }) => theme.patterns.radiusCard}px;
     background-color: ${ ({ theme, odds }) =>
-        odds >= 2 ? theme.colors.shape_highlight
+        odds >= 5 ? theme.colors.shape_highlight
         : theme.colors.shape
     };
     padding: 19px 18px;
@@ -62,7 +63,7 @@ export const NestedBets = styled.Text`
 
 export const Icon = styled(MaterialIcons)<ICard>`
     color: ${ ({ theme, odds }) =>
-        odds >= 2 ? theme.colors.shape
+        odds >= 5 ? theme.colors.shape
         : theme.colors.success
     };
     font-size: ${RFValue(40)}px;

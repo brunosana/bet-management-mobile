@@ -1,4 +1,9 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
+import { Modal } from 'react-native';
+import { FinishBet } from '../../screens/Modals/FinishBet';
+import { IBet } from '../../shared/interfaces/IBet';
+import { getTotalBetValue } from '../../shared/utils/getTotalBetValue';
+import { getTotalOdds } from '../../shared/utils/getTotalOdds';
 
 import {
     Container,
@@ -13,18 +18,39 @@ import {
 } from './styles';
 
 interface IOpenedBetProps {
-    teams: number;
-    odds: number;
-    value: number;
-    return_value: number;
+    bet: IBet;
+    id: string;
+    onFinishBet(): void;
 }
 
-const OpenedBetCard: React.FC<IOpenedBetProps> = ({ teams, odds, value, return_value }) => {
+const OpenedBetCard: React.FC<IOpenedBetProps> = ({ bet, id, onFinishBet }) => {
+    
+    const { bets, bet_value, _id } = bet;
+    const [finishBet, setFinishBet] = useState(false);
+    const totalOdds = getTotalOdds(bets);
+
+    const handleFinishBet = useCallback(() => {
+        setFinishBet(true);
+    }, []);
+
+    const handleCloseWithoutSave = useCallback(() => {
+        setFinishBet(false);
+    }, []);
+    
+    const handleCloseModal = useCallback(() => {
+        setFinishBet(false);
+        onFinishBet();
+    }, []);
+
     return (
-        <Container odds={odds} > 
+        <Container
+            odds={totalOdds}
+            activeOpacity={0.8}
+            onPress={handleFinishBet}
+        >
             <Header>
-                <NestedBets>{teams} Times</NestedBets>
-                <Icon name="attach-money" odds={odds} />
+                <NestedBets>{bets.length} Times</NestedBets>
+                <Icon name="attach-money" odds={totalOdds} />
             </Header>
             <Info>
                 <Card>
@@ -32,7 +58,7 @@ const OpenedBetCard: React.FC<IOpenedBetProps> = ({ teams, odds, value, return_v
                         Odds
                     </CardTitle>
                     <CardInfo>
-                        {odds}
+                        {totalOdds.toFixed(2).replace('.', ',')}
                     </CardInfo>
                 </Card>
                 <Card>
@@ -40,7 +66,7 @@ const OpenedBetCard: React.FC<IOpenedBetProps> = ({ teams, odds, value, return_v
                         Valor
                     </CardTitle>
                     <CardInfo>
-                        R$ {value}
+                        R$ {bet_value}
                     </CardInfo>
                 </Card>
             </Info>
@@ -50,10 +76,21 @@ const OpenedBetCard: React.FC<IOpenedBetProps> = ({ teams, odds, value, return_v
                         Possível retorno
                     </CardTitle>
                     <BetInfo>
-                        R$ {return_value}
+                        R$ {getTotalBetValue({ bets, bet_value})}
                     </BetInfo>
                 </Card>
             </Info>
+            <Modal
+                visible={finishBet}
+                transparent
+            >
+                <FinishBet
+                    bet={bet}
+                    id={id}
+                    closeModal={handleCloseModal}
+                    closeWithoutSalve={handleCloseWithoutSave}
+                />
+            </Modal>
         </Container>
     );
 }
