@@ -35,6 +35,7 @@ const Dashboard: React.FC = () => {
     const [openedBets, setOpenedBets] = useState<Array<IBet>>();
     const [bets, setBets] = useState<Array<IBet>>();
     const [isLoadingOptions, setIsLoadingOptions] = useState(false);
+    const [dataInProgress, setDataInProgress] = useState(false);
 
     const theme = useTheme();
     const { getBets } = useApi();
@@ -42,12 +43,16 @@ const Dashboard: React.FC = () => {
     const { signOut, user, googleUser, token } = useAuth();
 
     async function loadBets() {
+        setDataInProgress(true);
         const betsUser = await getBets({ token, max: 10, opened: false });
         setBets(betsUser);
+        setDataInProgress(false);
     }
     async function loadOpenedBets() {
+        setDataInProgress(true);
         const betsUser = await getBets({ token, opened: true });
         setOpenedBets(betsUser);
+        setDataInProgress(false);
     }
 
     useEffect(()=> {
@@ -91,8 +96,12 @@ const Dashboard: React.FC = () => {
                 </UserWrapper>
             </Header>
             {
-                (!openedBets || openedBets.length === 0) &&
+                ((!openedBets || openedBets.length === 0) && !dataInProgress) &&
                 <Message>Não há Apostas Abertas</Message>
+            }
+            {
+                ((!openedBets || openedBets.length === 0) && dataInProgress) &&
+                <Message>Carregando</Message>
             }
             <ActiveBets>
             { openedBets &&
@@ -117,8 +126,12 @@ const Dashboard: React.FC = () => {
                     </RefreshButton>
                 </BetHeader>
                 {
-                    (!bets || bets.length === 0) &&
+                    ((!bets || bets.length === 0) && !dataInProgress) &&
                     <Message>Não há histórico de Apostas</Message>
+                }
+                {
+                    ((!bets || bets.length === 0) && dataInProgress) &&
+                    <Message>Carregando</Message>
                 }
                 { bets && <BetsList
                     data={bets}
