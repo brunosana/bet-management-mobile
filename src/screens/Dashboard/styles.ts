@@ -69,8 +69,13 @@ export const Icon = styled(Ionicons)`
     color: ${({ theme }) => theme.colors.background};
     font-size: ${RFValue(28)}px;
 `;
+export const RefreshIcon = styled(Ionicons)`
+    color: ${({ theme }) => theme.colors.primary};
+    font-size: ${RFValue(28)}px;
+`;
 
 export const LogoutButton = styled(BorderlessButton)``;
+export const RefreshButton = styled(BorderlessButton)``;
 
 export const ActiveBets = styled.ScrollView.attrs({ 
     horizontal: true,
@@ -88,11 +93,16 @@ export const Bets = styled.View`
     margin-top: ${RFPercentage(8)}px;
 `;
 
+export const BetHeader = styled.View`
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: ${RFValue(15)}px;
+`;
 export const BetTitle = styled.Text`
     color: ${({ theme }) => theme.colors.primary};
     font-size: ${RFValue(18)}px;
     font-family: ${({ theme }) => theme.fonts.bold};
-    margin-bottom: ${RFValue(15)}px;
 `;
 
 export const BetsList = styled(
