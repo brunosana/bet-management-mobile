@@ -8,9 +8,10 @@ import { useTheme } from 'styled-components';
 const { Navigator, Screen } = createBottomTabNavigator();
 
 import { Dashboard  } from '../screens/Dashboard';
-import { CreateBet  } from '../screens/CreateBet';
+//import { CreateBet  } from '../screens/CreateBet';
 import { Platform } from 'react-native';
 
+import { CreateBetNavigator } from '../navigators/CreateBet';
 
 const AppRoutes: React.FC = () => {
 
@@ -46,7 +47,7 @@ const AppRoutes: React.FC = () => {
                 />
             <Screen
                 name="New Bet"
-                component={CreateBet}
+                component={CreateBetNavigator}
                 options={{
                     tabBarIcon: (({ size, color }) =>
                         <AntDesign
