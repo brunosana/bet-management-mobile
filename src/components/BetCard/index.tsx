@@ -1,5 +1,6 @@
 import React from 'react';
 import { IBet } from '../../shared/interfaces/IBet';
+import { getFormatedDate } from '../../shared/utils/getFormatedDate';
 import { getTotalBetValue } from '../../shared/utils/getTotalBetValue';
 import { getTotalOdds } from '../../shared/utils/getTotalOdds';
 
@@ -47,7 +48,7 @@ const BetCard: React.FC<IBetInfo> = ({ data }) => {
             </Header>
             <Footer>
                 <FooterInfo>Odds: {getTotalOdds(data.bets).toFixed(2).toString().replace('.',',')}</FooterInfo>
-                {/* <FooterInfo>{data.createdAt.toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</FooterInfo> */}
+                <FooterInfo>{getFormatedDate(data.updatedAt)}</FooterInfo>
             </Footer>
         </Container>
     );
